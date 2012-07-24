@@ -17,4 +17,18 @@ subtest 'source WebRequest' => sub {
 };
 
 
+subtest 'source Cron' => sub {
+  require RawSrcCron;
+  my @flds = qw( script uid gid );
+
+  ok(RawSrcCron->can($_), "C::C::R::Source::Cron can $_") for @flds;
+
+  my $cr = RawSrcCron->new;
+  is($cr->$_(), undef, "C::C::R::Source::Cron default for $_ is undef") for @flds;
+
+  $cr->$_($_) for @flds;
+  is($cr->$_(), $_, "C::C::R::Source::Cron allows updates to $_") for @flds;
+};
+
+
 done_testing();
