@@ -45,8 +45,8 @@ subtest 'subcontext mgmt' => sub {
 
 
 subtest 'context attrs' => sub {
-  my $ct = MyContext->new_ctx;
-  my $cs = $ct->sub_ctx;
+  my $ct = MyContext->new_ctx(id => 1);
+  my $cs = $ct->sub_ctx(parent_id => 2, id => 3);
 
   like($ct->id, qr{^[a-fA-F0-9-]{36}$}, 'main context id attr looks like a UUID');
   is($ct->parent_id, undef, '... and its parent_id attr is undef');
