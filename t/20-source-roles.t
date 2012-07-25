@@ -12,8 +12,15 @@ subtest 'source WebRequest' => sub {
   my $wr = RawSrcWebRequest->new;
   is($wr->$_(), undef, "C::C::R::Source::WebRequest default for $_ is undef") for @flds;
 
-  $wr->$_($_) for @flds;
-  is($wr->$_(), $_, "C::C::R::Source::WebRequest allows updates to $_") for @flds;
+  $wr->uri('http://example.com/');
+  is(ref($wr->uri),       'URI::http',           'uri attr coerces strings into URI objects');
+  is($wr->uri->as_string, 'http://example.com/', '... with the expected URI');
+
+  $wr->ip('10.10.10.10');
+  is($wr->ip, '10.10.10.10', 'ip attr is read/write');
+
+  $wr->method('POST');
+  is($wr->method, 'POST', 'method attr is read/write');
 };
 
 

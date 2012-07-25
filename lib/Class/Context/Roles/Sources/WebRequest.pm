@@ -1,9 +1,11 @@
 package Class::Context::Roles::Sources::WebRequest;
 
 use Moo::Role;
+use Scalar::Util 'blessed';
+use URI;
 
 has 'ip'     => (is => 'rw');
-has 'uri'    => (is => 'rw');
+has 'uri'    => (is => 'rw', coerce => sub { blessed($_[0]) ? $_[0] : URI->new($_[0]) });
 has 'method' => (is => 'rw');
 
 around 'BUILDARGS' => sub {
