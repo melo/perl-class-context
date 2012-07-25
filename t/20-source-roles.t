@@ -5,7 +5,7 @@ use lib 't/tlib';
 
 subtest 'source WebRequest' => sub {
   require RawSrcWebRequest;
-  my @flds = qw( ip method url );
+  my @flds = qw( ip method uri );
 
   ok(RawSrcWebRequest->can($_), "C::C::R::Source::WebRequest can $_") for @flds;
 
