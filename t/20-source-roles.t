@@ -24,7 +24,9 @@ subtest 'source Cron' => sub {
   ok(RawSrcCron->can($_), "C::C::R::Source::Cron can $_") for @flds;
 
   my $cr = RawSrcCron->new;
-  is($cr->$_(), undef, "C::C::R::Source::Cron default for $_ is undef") for @flds;
+  is($cr->script, $0, 'default for script attr is the script name');
+  is($cr->uid,    $>, 'default for uid attr is the effective user_id');
+  is($cr->gid,    $), 'default for gid attr is the effective group_id');
 
   $cr->$_($_) for @flds;
   is($cr->$_(), $_, "C::C::R::Source::Cron allows updates to $_") for @flds;
