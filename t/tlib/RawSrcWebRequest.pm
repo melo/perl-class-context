@@ -1,6 +1,6 @@
 package RawSrcWebRequest;
 
 use Moo;
-with 'Class::Context::Roles::Sources::WebRequest';
+with 'Class::Context::Sources::WebRequest';
 
 1;

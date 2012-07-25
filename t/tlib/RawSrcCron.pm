@@ -1,6 +1,6 @@
 package RawSrcCron;
 
 use Moo;
-with 'Class::Context::Roles::Sources::Cron';
+with 'Class::Context::Sources::Cron';
 
 1;

@@ -1,4 +1,4 @@
-package Class::Context::Roles::ID::UUID;
+package Class::Context::ID::UUID;
 
 # ABSTRACT: use UUIDs for Class::Context IDs
 # VERSION
@@ -42,7 +42,7 @@ __END__
     
     use Moo; ## or use Moose
     extends 'Class::Context';
-    with 'Class::Context::Roles::ID::UUID';
+    with 'Class::Context::ID::UUID';
     
     1;
 

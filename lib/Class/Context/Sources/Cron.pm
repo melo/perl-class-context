@@ -1,4 +1,4 @@
-package Class::Context::Roles::Sources::Cron;
+package Class::Context::Sources::Cron;
 
 # ABSTRACT: common fields for contexts used in cron scripts
 # VERSION
@@ -23,7 +23,7 @@ __END__
     
     use Moo; ## or use Moose
     extends 'Class::Context';
-    with 'Class::Context::Roles::Sources::Cron';
+    with 'Class::Context::Sources::Cron';
     
     1;
 

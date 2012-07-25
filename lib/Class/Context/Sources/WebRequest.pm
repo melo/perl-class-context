@@ -1,4 +1,4 @@
-package Class::Context::Roles::Sources::WebRequest;
+package Class::Context::Sources::WebRequest;
 
 # ABSTRACT: common fields for contexts used in web frameworks
 # VERSION
@@ -40,7 +40,7 @@ around 'BUILDARGS' => sub {
     
     use Moo; ## or use Moose
     extends 'Class::Context';
-    with 'Class::Context::Roles::Sources::WebRequest';
+    with 'Class::Context::Sources::WebRequest';
     
     1;
 
