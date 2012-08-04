@@ -47,14 +47,14 @@ around 'BUILDARGS' => sub {
 
 =head1 DESCRIPTION
 
-This role provides a set of attributes that a
-L<Class::Context> subclass will find usefull if its used in web requests.
+This role provides a set of attributes that a L<Class::Context> subclass will
+find usefull if its used in web requests.
 
-We keep track of three attributes discussed below in L</ATTRIBUTES>, but
-given that most Perl web frameworks use the L<PSGI> specification, we
-also accept a constructor argument named C<psgi_env>. If used, we will
-use L<Plack::Request> (which you must include on your app dependencies)
-to extract the other attribute values.
+We keep track of three attributes discussed below in L</ATTRIBUTES>, but given
+that most Perl web frameworks use the L<PSGI> specification, we also accept a
+constructor argument named C<psgi_env>. If used, we will use L<Plack::Request>
+(which you must include on your app dependencies) to extract the other
+attribute values.
 
 
 =head1 ATTRIBUTES

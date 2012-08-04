@@ -29,8 +29,8 @@ __END__
 
 =head1 DESCRIPTION
 
-This role provides a set of attributes that a
-L<Class::Context> subclass will find usefull if its used in cron scripts.
+This role provides a set of attributes that a L<Class::Context> subclass will
+find usefull if its used in cron scripts.
 
 =head1 ATTRIBUTES
 
