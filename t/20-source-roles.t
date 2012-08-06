@@ -1,6 +1,7 @@
 #!perl
 
 use Test::More;
+use Test::Deep;
 use lib 't/tlib';
 
 subtest 'source WebRequest' => sub {
@@ -65,18 +66,20 @@ subtest 'source WebRequest via psgi_env' => sub {
 
 
 subtest 'source Cron' => sub {
-  require RawSrcCron;
+  require MySrcCron;
   my @flds = qw( script uid gid );
 
-  ok(RawSrcCron->can($_), "C::C::R::Source::Cron can $_") for @flds;
+  ok(MySrcCron->can($_), "C::C::R::Source::Cron can $_") for @flds;
 
-  my $cr = RawSrcCron->new;
+  my $cr = MySrcCron->new_ctx;
   is($cr->script, $0, 'default for script attr is the script name');
   is($cr->uid,    $>, 'default for uid attr is the effective user_id');
   is($cr->gid,    $), 'default for gid attr is the effective group_id');
+  cmp_deeply($cr->data, { cron => { script => $0, uid => $>, gid => $) } }, "data() was init'ed with the defaults");
 
   $cr->$_($_) for @flds;
   is($cr->$_(), $_, "C::C::R::Source::Cron allows updates to $_") for @flds;
+  cmp_deeply($cr->data, { cron => { script => 'script', uid => 'uid', gid => 'gid' } }, '... data() was updated');
 };
 
 

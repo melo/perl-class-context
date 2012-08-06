@@ -5,10 +5,12 @@ package Class::Context::Sources::Cron;
 # AUTHORITY
 
 use Moo::Role;
+use Class::Context::Utils 'has_data_field';
+use namespace::autoclean;
 
-has 'script' => (is => 'rw', default => sub {$0});
-has 'uid'    => (is => 'rw', default => sub {$>});
-has 'gid'    => (is => 'rw', default => sub {$)});
+has_data_field 'script' => (is => 'rw', default => sub {$0}, data_ns => 'cron');
+has_data_field 'uid'    => (is => 'rw', default => sub {$>}, data_ns => 'cron');
+has_data_field 'gid'    => (is => 'rw', default => sub {$)}, data_ns => 'cron');
 
 1;
 __END__
