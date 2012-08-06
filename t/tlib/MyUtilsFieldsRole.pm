@@ -10,4 +10,7 @@ sub test1_triggered { my ($self) = @_; my $v = $self->_test1_triggered; $self->_
 has_data_field 'test1' => (is => 'rw', trigger => sub { shift->_test1_triggered(1) });
 has_data_field 'test2' => (is => 'rw');
 
+has_data_field 'test3' => (is => 'rw', data_ns => 'test');
+has_data_field 'test4' => (is => 'rw', data_ns => 'test');
+
 1;

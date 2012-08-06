@@ -28,8 +28,21 @@ sub _install_has_data_field {
       my ($name, %meta) = @_;
 
       my $orig_trigger = $meta{trigger};
+      my $data_ns = exists $meta{data_ns} ? $meta{data_ns} : '';
       $meta{trigger} = subname "_trigger_$name" => sub {
-        $_[0]->data($name => $_[1]);
+        my ($self, $val) = @_;
+        my $df = $name;
+
+        if ($data_ns) {
+          my $cur_data = $self->data($data_ns);
+          $cur_data = {} unless $cur_data;
+          $cur_data->{$name} = $val;
+
+          $val = $cur_data;
+          $df  = $data_ns;
+        }
+
+        $self->data($df, $val);
         $orig_trigger->(@_) if $orig_trigger;
       };
 
@@ -37,5 +50,6 @@ sub _install_has_data_field {
     }
   );
 }
+
 
 1;
