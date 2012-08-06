@@ -3,7 +3,6 @@ package Class::Context::Utils;
 use strict;
 use warnings;
 use Carp 'croak';
-use Sub::Name;
 use Package::Stash;
 
 sub import {
@@ -20,7 +19,24 @@ sub import {
 sub _install_has_data_field {
   my ($stash, $target) = @_;
 
-  my $has_cb = $stash->get_symbol('&has') || confess("Package $target doesn't have a 'has' method,");
+  my $has_cb      = $stash->get_symbol('&has')      || confess("Package $target doesn't have a 'has' method,");
+  my $requires_cb = $stash->get_symbol('&requires') || confess("Package $target doesn't have a 'requires' method,");
+  my $after_cb    = $stash->get_symbol('&after')    || confess("Package $target doesn't have a 'after' method,");
+
+  my @f_init;
+  $requires_cb->('BUILD');
+  $after_cb->(
+    'BUILD',
+    sub {
+      my ($self) = @_;
+
+      for (@f_init) {
+        my ($ns, $field) = @$_;
+        my $val = $self->$field();
+        _update_data_field(undef, $ns, $field, $self, $val) if defined $val;
+      }
+    }
+  );
 
   $stash->add_symbol(
     '&has_data_field',
@@ -28,27 +44,31 @@ sub _install_has_data_field {
       my ($name, %meta) = @_;
 
       my $orig_trigger = $meta{trigger};
-      my $data_ns = exists $meta{data_ns} ? $meta{data_ns} : '';
-      $meta{trigger} = subname "_trigger_$name" => sub {
-        my ($self, $val) = @_;
-        my $df = $name;
+      my $data_ns      = delete $meta{data_ns};
+      $meta{trigger} = sub { _update_data_field($orig_trigger, $data_ns, $name, @_) };
 
-        if ($data_ns) {
-          my $cur_data = $self->data($data_ns);
-          $cur_data = {} unless $cur_data;
-          $cur_data->{$name} = $val;
-
-          $val = $cur_data;
-          $df  = $data_ns;
-        }
-
-        $self->data($df, $val);
-        $orig_trigger->(@_) if $orig_trigger;
-      };
-
+      push @f_init, [$data_ns, $name];
       $has_cb->($name, %meta);
     }
   );
+}
+
+
+sub _update_data_field {
+  my ($orig_trigger, $data_ns, $name, $self, $val, @rest) = @_;
+  my $df = $name;
+
+  if ($data_ns) {
+    my $data = $self->data($data_ns);
+    $data = {} unless $data;
+    $data->{$name} = $val;
+
+    $val = $data;
+    $df  = $data_ns;
+  }
+
+  $self->data($df, $val);
+  $orig_trigger->($self, $val, @rest) if $orig_trigger;
 }
 
 

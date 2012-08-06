@@ -6,6 +6,7 @@ use Test::More;
 use Test::Deep;
 use lib 't/tlib';
 use MyUtilsContext;
+use MyUtilsDefaultContext;
 
 
 subtest 'has_data_field' => sub {
@@ -62,6 +63,20 @@ subtest 'has_data_field with namespace' => sub {
     { test => { test3 => 'third test', test4 => undef } },
     '... data was updated for test4, merged with previous value',
   );
+};
+
+
+subtest 'has_data_field with defaults' => sub {
+  my $ctx = MyUtilsDefaultContext->new_ctx;
+
+  cmp_deeply($ctx->data, { one => 1, test => { two => 2 }, three => 3, four => 4 },
+    'data() is set with default values');
+  is($ctx->update_count, 4, 'three data updates, one for each default field, one for builder, one for lazy builder');
+
+  $ctx->one('one');
+  $ctx->two('two');
+  cmp_deeply($ctx->data, { one => 'one', test => { two => 'two' }, three => 3, four => 4 }, 'data() was updated');
+  is($ctx->update_count, 6, 'each field update triggers another data update');
 };
 
 
