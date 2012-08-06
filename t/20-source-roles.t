@@ -5,12 +5,12 @@ use Test::Deep;
 use lib 't/tlib';
 
 subtest 'source WebRequest' => sub {
-  require RawSrcWebRequest;
+  require MySrcWebRequest;
   my @flds = qw( ip method uri );
 
-  ok(RawSrcWebRequest->can($_), "C::C::R::Source::WebRequest can $_") for @flds;
+  ok(MySrcWebRequest->can($_), "C::C::R::Source::WebRequest can $_") for @flds;
 
-  my $wr = RawSrcWebRequest->new;
+  my $wr = MySrcWebRequest->new_ctx;
   is($wr->$_(), undef, "C::C::R::Source::WebRequest default for $_ is undef") for @flds;
 
   $wr->uri('http://example.com/');
@@ -22,11 +22,22 @@ subtest 'source WebRequest' => sub {
 
   $wr->method('POST');
   is($wr->method, 'POST', 'method attr is read/write');
+
+  cmp_deeply(
+    $wr->data,
+    { web_request => {
+        ip     => '10.10.10.10',
+        method => 'POST',
+        uri    => URI->new('http://example.com/'),
+      }
+    },
+    'data() was properly updated',
+  );
 };
 
 
 subtest 'source WebRequest via psgi_env' => sub {
-  require RawSrcWebRequest;
+  require MySrcWebRequest;
   my $env = {
     "HTTP_ACCEPT"            => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "HTTP_ACCEPT_ENCODING"   => "gzip, deflate",
@@ -57,11 +68,22 @@ subtest 'source WebRequest via psgi_env' => sub {
     "SERVER_PROTOCOL"        => "HTTP/1.0",
   };
 
-  my $wr = RawSrcWebRequest->new(psgi_env => $env);
+  my $wr = MySrcWebRequest->new_ctx(psgi_env => $env);
   ok($wr, 'Got a WebRequest instance');
   is($wr->ip,             '10.10.10.10',                  '... ip attr ok');
   is($wr->method,         'GET',                          '... method attr ok');
   is($wr->uri->as_string, 'http://example.com/path?a=42', '... uri attr ok');
+
+  cmp_deeply(
+    $wr->data,
+    { web_request => {
+        ip     => '10.10.10.10',
+        method => 'GET',
+        uri    => URI->new('http://example.com/path?a=42'),
+      }
+    },
+    'data() was properly updated',
+  );
 };
 
 

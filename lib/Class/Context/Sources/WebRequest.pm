@@ -5,12 +5,20 @@ package Class::Context::Sources::WebRequest;
 # AUTHORITY
 
 use Moo::Role;
+use Class::Context::Utils 'has_data_field';
 use Scalar::Util 'blessed';
 use URI;
+use namespace::autoclean;
 
-has 'ip'     => (is => 'rw');
-has 'uri'    => (is => 'rw', coerce => sub { blessed($_[0]) ? $_[0] : URI->new($_[0]) });
-has 'method' => (is => 'rw');
+requires 'BUILDARGS';
+
+has_data_field 'ip'     => (is => 'rw', data_ns => 'web_request');
+has_data_field 'method' => (is => 'rw', data_ns => 'web_request');
+has_data_field 'uri'    => (
+  is      => 'rw',
+  data_ns => 'web_request',
+  coerce  => sub { blessed($_[0]) ? $_[0] : URI->new($_[0]) },
+);
 
 around 'BUILDARGS' => sub {
   my $orig = shift;
