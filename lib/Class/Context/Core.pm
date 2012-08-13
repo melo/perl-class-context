@@ -11,6 +11,6 @@ has 'parent_id' => (is => 'ro');
 
 ## Need to make sure it exists, other roles require it
 sub DEMOLISH { }
-
+sub BUILD    { }
 
 1;
