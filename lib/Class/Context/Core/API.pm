@@ -41,5 +41,4 @@ sub cb {
   return sub { $c->run($cb) };
 }
 
-
 1;
