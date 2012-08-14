@@ -19,6 +19,8 @@ has_data_field 'uri'    => (
   data_ns => 'web_request',
   coerce  => sub { blessed($_[0]) ? $_[0] : URI->new($_[0]) },
 );
+has_data_field 'secure' => (is => 'rw', data_ns => 'web_request');
+
 
 around 'BUILDARGS' => sub {
   my $orig = shift;
@@ -31,6 +33,7 @@ around 'BUILDARGS' => sub {
     $args->{ip}     = $r->address;
     $args->{uri}    = $r->uri;
     $args->{method} = $r->method;
+    $args->{secure} = $r->secure || 0;
   }
 
   return $args;

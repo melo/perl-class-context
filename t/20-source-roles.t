@@ -73,6 +73,7 @@ subtest 'source WebRequest via psgi_env' => sub {
   is($wr->ip,             '10.10.10.10',                  '... ip attr ok');
   is($wr->method,         'GET',                          '... method attr ok');
   is($wr->uri->as_string, 'http://example.com/path?a=42', '... uri attr ok');
+  ok(!$wr->secure,, '... secure attr ok');
 
   cmp_deeply(
     $wr->data,
@@ -80,6 +81,56 @@ subtest 'source WebRequest via psgi_env' => sub {
         ip     => '10.10.10.10',
         method => 'GET',
         uri    => URI->new('http://example.com/path?a=42'),
+        secure => 0,
+      }
+    },
+    'data() was properly updated',
+  );
+
+  $env = {
+    "HTTP_ACCEPT"            => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "HTTP_ACCEPT_ENCODING"   => "gzip, deflate",
+    "HTTP_ACCEPT_LANGUAGE"   => "en-us",
+    "HTTP_DNT"               => 1,
+    "HTTP_HOST"              => "example.com",
+    "HTTP_X_FORWARDED_FOR"   => "10.10.10.10",
+    "HTTP_X_FORWARDED_PROTO" => "http",
+    "HTTP_X_REAL_IP"         => "10.10.10.10",
+    "PATH_INFO"              => "/path",
+    "psgi.multiprocess"      => 1,
+    "psgi.multithread"       => "",
+    "psgi.nonblocking"       => "",
+    "psgi.run_once"          => "",
+    "psgi.streaming"         => 1,
+    "psgi.url_scheme"        => "https",
+    "psgi.version"           => [1, 1],
+    "psgix.harakiri"         => 1,
+    "psgix.input.buffered"   => 1,
+    "QUERY_STRING"           => "a=42",
+    "REMOTE_ADDR"            => "10.10.10.10",
+    "REMOTE_HOST"            => "127.0.0.1",
+    "REQUEST_METHOD"         => "GET",
+    "REQUEST_URI"            => "/path?a=42",
+    "SCRIPT_NAME"            => "",
+    "SERVER_NAME"            => "127.0.0.1",
+    "SERVER_PORT"            => 80,
+    "SERVER_PROTOCOL"        => "HTTP/1.0",
+  };
+
+  $wr = MySrcWebRequest->new_ctx(psgi_env => $env);
+  ok($wr, 'Got a WebRequest instance for a secure psgi env');
+  is($wr->ip,             '10.10.10.10',                   '... ip attr ok');
+  is($wr->method,         'GET',                           '... method attr ok');
+  is($wr->uri->as_string, 'https://example.com/path?a=42', '... uri attr ok');
+  ok($wr->secure,, '... secure attr ok');
+
+  cmp_deeply(
+    $wr->data,
+    { web_request => {
+        ip     => '10.10.10.10',
+        method => 'GET',
+        uri    => URI->new('https://example.com/path?a=42'),
+        secure => 1,
       }
     },
     'data() was properly updated',
