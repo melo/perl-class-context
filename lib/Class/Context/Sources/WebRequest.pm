@@ -18,6 +18,7 @@ has_data_field 'uri'    => (
   is      => 'rw',
   data_ns => 'web_request',
   coerce  => sub { blessed($_[0]) ? $_[0] : URI->new($_[0]) },
+  isa     => sub { die "Attr 'uri' must be URI object," unless blessed($_[0]) && $_[0]->isa('URI') },
 );
 has_data_field 'secure' => (is => 'rw', data_ns => 'web_request');
 
