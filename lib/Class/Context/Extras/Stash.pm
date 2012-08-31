@@ -25,5 +25,22 @@ sub stash {
   return;
 }
 
+sub stash_push {
+  return unless @_ > 2;
+  my $self = shift;
+  my $key  = shift;
+
+  my $stash  = $self->_stash;
+  my $target = $stash->{$key};
+
+  unless (ref($target) eq 'ARRAY') {
+    $target = defined $target ? [$target] : [];
+    $stash->{$key} = $target;
+  }
+
+  push @$target, @_;
+  return scalar(@$target);
+}
+
 
 1;

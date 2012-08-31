@@ -30,5 +30,20 @@ subtest 'basic stash' => sub {
   );
 };
 
+subtest 'stash push' => sub {
+  my $ctx = MyStash->new;
+
+  is($ctx->stash_push('list', 'a'), 1, 'stash_push() returns number of elements in key after push');
+  is($ctx->stash_push('list', 'b', 'c', 'd'), 4, '... you can also push multiple values');
+  cmp_deeply($ctx->stash('list'), [qw(a b  c d)], 'final list as expected');
+
+  $ctx->stash('upgr', 'xpto');
+  is($ctx->stash_push('upgr', 'ypto'), 2, 'regular keys are upgraded to lists, proper number of elements');
+  cmp_deeply($ctx->stash('upgr'), [qw(xpto ypto)], '... proper content');
+
+  is($ctx->stash_push,          undef, 'calls with no args are ignored, return undef');
+  is($ctx->stash_push('stash'), undef, 'calls with no values also ignored, return undef');
+};
+
 
 done_testing();
