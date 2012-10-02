@@ -44,6 +44,7 @@ subtest 'source WebRequest via psgi_env' => sub {
     "HTTP_ACCEPT_LANGUAGE"   => "en-us",
     "HTTP_DNT"               => 1,
     "HTTP_HOST"              => "example.com",
+    "HTTP_USER_AGENT"        => "user agent 007",
     "HTTP_X_FORWARDED_FOR"   => "10.10.10.10",
     "HTTP_X_FORWARDED_PROTO" => "http",
     "HTTP_X_REAL_IP"         => "10.10.10.10",
@@ -72,16 +73,18 @@ subtest 'source WebRequest via psgi_env' => sub {
   ok($wr, 'Got a WebRequest instance');
   is($wr->ip,             '10.10.10.10',                  '... ip attr ok');
   is($wr->method,         'GET',                          '... method attr ok');
+  is($wr->user_agent,     'user agent 007',               '... user_agent attr ok');
   is($wr->uri->as_string, 'http://example.com/path?a=42', '... uri attr ok');
-  ok(!$wr->secure,, '... secure attr ok');
+  ok(!$wr->secure, '... secure attr ok');
 
   cmp_deeply(
     $wr->data,
     { web_request => {
-        ip     => '10.10.10.10',
-        method => 'GET',
-        uri    => URI->new('http://example.com/path?a=42'),
-        secure => 0,
+        ip         => '10.10.10.10',
+        method     => 'GET',
+        uri        => URI->new('http://example.com/path?a=42'),
+        secure     => 0,
+        user_agent => 'user agent 007',
       }
     },
     'data() was properly updated',
@@ -93,6 +96,7 @@ subtest 'source WebRequest via psgi_env' => sub {
     "HTTP_ACCEPT_LANGUAGE"   => "en-us",
     "HTTP_DNT"               => 1,
     "HTTP_HOST"              => "example.com",
+    "HTTP_USER_AGENT"        => "user agent 007",
     "HTTP_X_FORWARDED_FOR"   => "10.10.10.10",
     "HTTP_X_FORWARDED_PROTO" => "http",
     "HTTP_X_REAL_IP"         => "10.10.10.10",
@@ -121,16 +125,18 @@ subtest 'source WebRequest via psgi_env' => sub {
   ok($wr, 'Got a WebRequest instance for a secure psgi env');
   is($wr->ip,             '10.10.10.10',                   '... ip attr ok');
   is($wr->method,         'GET',                           '... method attr ok');
+  is($wr->user_agent,     'user agent 007',                '... user_agent attr ok');
   is($wr->uri->as_string, 'https://example.com/path?a=42', '... uri attr ok');
-  ok($wr->secure,, '... secure attr ok');
+  ok($wr->secure, '... secure attr ok');
 
   cmp_deeply(
     $wr->data,
     { web_request => {
-        ip     => '10.10.10.10',
-        method => 'GET',
-        uri    => URI->new('https://example.com/path?a=42'),
-        secure => 1,
+        ip         => '10.10.10.10',
+        method     => 'GET',
+        uri        => URI->new('https://example.com/path?a=42'),
+        secure     => 1,
+        user_agent => 'user agent 007',
       }
     },
     'data() was properly updated',
