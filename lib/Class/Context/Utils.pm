@@ -8,20 +8,19 @@ use Package::Stash;
 sub import {
   my $class  = shift;
   my $target = caller;
-  my $stash  = Package::Stash->new($target);
 
   for my $meth (@_) {
-    if ($meth eq 'has_data_field') { _install_has_data_field($stash, $target) }
-    else                           { croak "Method '$meth' not exported by $class," }
+    if   ($meth eq 'has_data_field') { _install_has_data_field($target) }
+    else                             { croak "Method '$meth' not exported by $class," }
   }
 }
 
 sub _install_has_data_field {
-  my ($stash, $target) = @_;
+  my ($target) = @_;
 
-  my $has_cb      = $stash->get_symbol('&has')      || confess("Package $target doesn't have a 'has' method,");
-  my $requires_cb = $stash->get_symbol('&requires') || confess("Package $target doesn't have a 'requires' method,");
-  my $after_cb    = $stash->get_symbol('&after')    || confess("Package $target doesn't have a 'after' method,");
+  my $has_cb      = $target->can('has')      || confess("Package $target doesn't have a 'has' method,");
+  my $requires_cb = $target->can('requires') || confess("Package $target doesn't have a 'requires' method,");
+  my $after_cb    = $target->can('after')    || confess("Package $target doesn't have a 'after' method,");
 
   my @f_init;
   $requires_cb->('BUILD');
@@ -38,6 +37,7 @@ sub _install_has_data_field {
     }
   );
 
+  my $stash = Package::Stash->new($target);
   $stash->add_symbol(
     '&has_data_field',
     sub {
