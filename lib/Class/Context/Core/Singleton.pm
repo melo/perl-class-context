@@ -8,19 +8,16 @@ requires 'DEMOLISH', 'generate_id';
 
 our %ctxs;
 
-sub __ctx_get {
-  my $class = shift;
-  $class = ref($class) if ref($class);
+sub ctx_id { my $class = shift; return ref($class) || $class }
 
-  return $ctxs{$class};
-}
+sub __ctx_get { return $ctxs{ shift->ctx_id } }
 
 sub __ctx_set {
-  my $self  = shift;
-  my $class = ref($self);
+  my $self = shift;
+  my $id   = $self->ctx_id;
 
-  $ctxs{$class} = $self;
-  weaken($ctxs{$class});
+  $ctxs{$id} = $self;
+  weaken($ctxs{$id});
 }
 
 sub __ctx_new {
@@ -33,15 +30,15 @@ sub __ctx_new {
 sub __ctx_run {
   my ($c, $cb) = @_;
 
-  local $ctxs{ ref($c) } = $c;
+  local $ctxs{ $c->ctx_id } = $c;
   return $cb->();
 }
 
 before DEMOLISH => sub {
-  my $c     = shift;
-  my $class = ref($c);
+  my $c  = shift;
+  my $id = $c->ctx_id;
 
-  delete $ctxs{$class} if exists $ctxs{$class} && $ctxs{$class} eq $c;
+  delete $ctxs{$id} if exists $ctxs{$id} && $ctxs{$id} eq $c;
 };
 
 1;

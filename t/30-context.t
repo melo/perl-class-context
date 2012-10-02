@@ -4,6 +4,7 @@ use Test::More;
 use lib 't/tlib';
 use MyContext;
 use MyOtherContext;
+use MyCtxWithIdChild;
 
 subtest 'instance mgmt' => sub {
   is(MyContext->ctx, undef, 'no current context defined by default');
@@ -96,6 +97,16 @@ subtest 'callbacks keep context alive' => sub {
 
   undef $cb;
   is(MyContext->ctx, undef, 'When callback goes out-of-scope, current context is finally reset to undef');
+};
+
+
+subtest 'context ID' => sub {
+  my $ct = MyCtxWithId->new_ctx;
+  ok($ct, 'Got a new context for MyCtxWithId');
+  is(MyCtxWithIdChild->ctx, $ct, '... subclass uses same ctx_id(), so same ctx');
+
+  $ct = MyCtxWithIdChild->new_ctx;
+  is(MyCtxWithId->ctx, $ct, '... and vice-versa');
 };
 
 
