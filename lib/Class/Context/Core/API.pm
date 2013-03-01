@@ -41,4 +41,18 @@ sub cb {
   return sub { $c->run($cb) };
 }
 
+sub run_in_sub_ctx {
+  my ($c, $cb, @extra) = @_;
+
+  ## save and make sure we restore the current ctx after we are done
+  my $current_ctx = $c->__ctx_get;
+  my $guard = Class::Context::Guard->new(sub { $current_ctx->__ctx_set });
+
+  ## Create the new sub context, make it the active one
+  my $sc = $c->sub_ctx(@extra);
+
+  ## Run the original callback under a new fresh sub context
+  return $sc->run($cb);
+}
+
 1;

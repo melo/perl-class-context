@@ -81,6 +81,27 @@ subtest 'run code under context' => sub {
 };
 
 
+subtest 'run code under subcontext' => sub {
+  my $main_ctx = MyContext->new_ctx;
+
+  is(MyContext->ctx->id, $main_ctx->id, 'current context id starts as main_ctx');
+
+  $main_ctx->run_in_sub_ctx(
+    sub {
+      my $sub_ctx = MyContext->ctx;
+
+      isnt($sub_ctx->id, $main_ctx->id, 'subcontext created has different id');
+      is($sub_ctx->parent_id, $main_ctx->id, '... but it is a direct child of main_ctx');
+
+      is($sub_ctx->ip, '127.0.0.42', 'extra arguments are used to create the subcontext');
+    },
+    ip => '127.0.0.42',
+  );
+
+  is(MyContext->ctx->id, $main_ctx->id, 'current context id is back to main_ctx');
+};
+
+
 subtest 'callbacks keep context alive' => sub {
   my $ct = MyContext->new_ctx;
   is(MyContext->ctx, $ct, 'current context set to newly created top level context');
