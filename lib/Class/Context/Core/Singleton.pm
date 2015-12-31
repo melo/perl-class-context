@@ -38,7 +38,7 @@ before DEMOLISH => sub {
   my $c  = shift;
   my $id = $c->ctx_id;
 
-  delete $ctxs{$id} if exists $ctxs{$id} && $ctxs{$id} eq $c;
+  delete $ctxs{$id} if exists $ctxs{$id} and (!$ctxs{$id} or $ctxs{$id} eq $c);
 };
 
 1;
